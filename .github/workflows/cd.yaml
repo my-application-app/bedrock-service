@@ -48,7 +48,7 @@ jobs:
         echo "📦 Applying other Bedrock Service manifests..."
         
         # Apply other service resources
-        kubectl apply -f k8s/secrets.yaml
+        kubectl apply -f k8s/aws-secrets.yaml
         kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
         kubectl apply -f k8s/hpa.yaml
