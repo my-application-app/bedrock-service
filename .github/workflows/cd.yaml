@@ -40,95 +40,16 @@ jobs:
     
     - name: Create Bedrock Service Deployment
       run: |
-        echo "📦 Creating Bedrock Service deployment..."
-        
-        # Create the deployment inline since k8s/deployment.yaml is for api-gateway
-        cat <<EOF | kubectl apply -f -
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: bedrock-service
-          namespace: bedrock-chat-v2
-          labels:
-            app: bedrock-service
-        spec:
-          replicas: 1
-          selector:
-            matchLabels:
-              app: bedrock-service
-          template:
-            metadata:
-              labels:
-                app: bedrock-service
-            spec:
-              imagePullSecrets:
-                - name: docker-hub-secret
-              containers:
-                - name: bedrock-service
-                  image: samitsinghhh/bedrock-service:v3
-                  imagePullPolicy: Always
-                  ports:
-                    - containerPort: 9000
-                      name: http
-                  env:
-                    - name: AWS_ACCESS_KEY_ID
-                      valueFrom:
-                        secretKeyRef:
-                          name: app-secrets
-                          key: AWS_ACCESS_KEY_ID
-                    - name: AWS_SECRET_ACCESS_KEY
-                      valueFrom:
-                        secretKeyRef:
-                          name: app-secrets
-                          key: AWS_SECRET_ACCESS_KEY
-                    - name: AWS_REGION
-                      valueFrom:
-                        secretKeyRef:
-                          name: app-secrets
-                          key: AWS_REGION
-                  startupProbe:
-                    httpGet:
-                      path: /health
-                      port: 9000
-                    initialDelaySeconds: 20
-                    periodSeconds: 5
-                    timeoutSeconds: 3
-                    successThreshold: 1
-                    failureThreshold: 12
-                  livenessProbe:
-                    httpGet:
-                      path: /health
-                      port: 9000
-                    initialDelaySeconds: 45
-                    periodSeconds: 15
-                    timeoutSeconds: 5
-                    successThreshold: 1
-                    failureThreshold: 3
-                  readinessProbe:
-                    httpGet:
-                      path: /health
-                      port: 9000
-                    initialDelaySeconds: 30
-                    periodSeconds: 10
-                    timeoutSeconds: 5
-                    successThreshold: 1
-                    failureThreshold: 3
-                  resources:
-                    requests:
-                      memory: "64Mi"
-                      cpu: "50m"
-                    limits:
-                      memory: "256Mi"
-                      cpu: "500m"
-        EOF
-        
-        echo "✅ Bedrock service deployment created"
+        e
+      
     
     - name: Apply other Kubernetes manifests
       run: |
         echo "📦 Applying other Bedrock Service manifests..."
         
         # Apply other service resources
+        kubectl apply -f k8s/secrets.yaml
+        kubectl apply -f k8s/deployment.yaml
         kubectl apply -f k8s/service.yaml
         kubectl apply -f k8s/hpa.yaml
         kubectl apply -f k8s/network-policies.yaml
