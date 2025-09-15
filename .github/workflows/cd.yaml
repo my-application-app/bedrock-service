@@ -137,8 +137,14 @@ jobs:
         # Apply HPA for bedrock service
         kubectl apply -f k8s/hpa.yaml
         
-        # Apply network policies
-        kubectl apply -f k8s/network-policies.yaml
+        # Apply network policies (check both possible filenames)
+        if [ -f "k8s/network-policies.yaml" ]; then
+          kubectl apply -f k8s/network-policies.yaml
+        elif [ -f "k8s/network-policies" ]; then
+          kubectl apply -f k8s/network-policies
+        else
+          echo "⚠️ Network policies file not found, skipping..."
+        fi
         
         echo "✅ Bedrock service manifests applied"
     
