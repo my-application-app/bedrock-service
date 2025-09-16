@@ -28,17 +28,17 @@ spec:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
-                  name: aws-secrets
+                  name: app-secrets  # ✅ Fixed: matches aws-secrets.yaml
                   key: AWS_ACCESS_KEY_ID
             - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: aws-secrets
+                  name: app-secrets  # ✅ Fixed: matches aws-secrets.yaml
                   key: AWS_SECRET_ACCESS_KEY
             - name: AWS_REGION
               valueFrom:
-                configMapKeyRef:
-                  name: app-config
+                secretKeyRef:
+                  name: app-secrets  # ✅ Fixed: get from secret instead
                   key: AWS_REGION
           startupProbe:
             httpGet:
