@@ -27,18 +27,18 @@ spec:
           env:
             - name: DATABASE_URL
               valueFrom:
-                configMapKeyRef:
-                  name: app-config
+                secretKeyRef:
+                  name: app-secrets
                   key: DATABASE_URL
             - name: BEDROCK_SERVICE_URL
               valueFrom:
-                configMapKeyRef:
-                  name: app-config
+                secretKeyRef:
+                  name: app-secrets
                   key: BEDROCK_SERVICE_URL
             - name: FILE_SERVICE_URL
               valueFrom:
-                configMapKeyRef:
-                  name: app-config
+                secretKeyRef:
+                  name: app-secrets
                   key: FILE_SERVICE_URL
           startupProbe:
             httpGet:
