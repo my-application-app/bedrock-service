@@ -40,20 +40,24 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: AWS_REGION
+            # Add debug environment variable
+            - name: GO_ENV
+              value: "production"
+          # Increase timeouts for AWS initialization
           startupProbe:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 60
+            initialDelaySeconds: 90    # Increased for AWS connection
             periodSeconds: 15
             timeoutSeconds: 15
             successThreshold: 1
-            failureThreshold: 15
+            failureThreshold: 20       # More retries for AWS setup
           livenessProbe:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 120
+            initialDelaySeconds: 180   # Much longer for AWS initialization
             periodSeconds: 30
             timeoutSeconds: 15
             successThreshold: 1
@@ -62,15 +66,15 @@ spec:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 90
+            initialDelaySeconds: 120   # Longer for AWS ready check
             periodSeconds: 15
             timeoutSeconds: 10
             successThreshold: 1
-            failureThreshold: 3
+            failureThreshold: 5
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "384Mi"
+              memory: "256Mi"          # Increased for AWS SDK
               cpu: "200m"
+            limits:
+              memory: "512Mi"          # More memory for Bedrock
+              cpu: "500m"
