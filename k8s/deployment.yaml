@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: bedrock-service
-          image: samitsinghhh/bedrock-service:latest
+          image: samitsinghhh/bedrock-service:v3
           imagePullPolicy: Always
           ports:
             - containerPort: 9000
@@ -42,27 +42,27 @@ spec:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 10
             successThreshold: 1
-            failureThreshold: 10
+            failureThreshold: 20
           livenessProbe:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 60
-            periodSeconds: 20
-            timeoutSeconds: 10
+            initialDelaySeconds: 180
+            periodSeconds: 30
+            timeoutSeconds: 15
             successThreshold: 1
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            timeoutSeconds: 10
             successThreshold: 1
             failureThreshold: 3
           resources:
