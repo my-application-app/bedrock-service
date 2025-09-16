@@ -15,6 +15,8 @@ spec:
       labels:
         app: bedrock-service
     spec:
+      imagePullSecrets:
+        - name: docker-hub-secret
       containers:
         - name: bedrock-service
           image: samitsinghhh/bedrock-service:v3
@@ -35,8 +37,8 @@ spec:
                   key: AWS_SECRET_ACCESS_KEY
             - name: AWS_REGION
               valueFrom:
-                secretKeyRef:
-                  name: app-secrets
+                configMapKeyRef:
+                  name: app-config
                   key: AWS_REGION
           startupProbe:
             httpGet:
@@ -44,14 +46,14 @@ spec:
               port: 9000
             initialDelaySeconds: 60
             periodSeconds: 15
-            timeoutSeconds: 10
+            timeoutSeconds: 15
             successThreshold: 1
-            failureThreshold: 20
+            failureThreshold: 15
           livenessProbe:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 180
+            initialDelaySeconds: 120
             periodSeconds: 30
             timeoutSeconds: 15
             successThreshold: 1
@@ -60,7 +62,7 @@ spec:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 120
+            initialDelaySeconds: 90
             periodSeconds: 15
             timeoutSeconds: 10
             successThreshold: 1
@@ -70,5 +72,5 @@ spec:
               memory: "128Mi"
               cpu: "100m"
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "384Mi"
+              cpu: "200m"
