@@ -1,76 +1,74 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: api-gateway
+  name: bedrock-service
   namespace: bedrock-chat-v2
   labels:
-    app: api-gateway
+    app: bedrock-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: api-gateway
+      app: bedrock-service
   template:
     metadata:
       labels:
-        app: api-gateway
+        app: bedrock-service
     spec:
-      imagePullSecrets:
-        - name: docker-hub-secret
       containers:
-        - name: api-gateway
-          image: samitsinghhh/api-gateway:v3
+        - name: bedrock-service
+          image: samitsinghhh/bedrock-service:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8000
+            - containerPort: 9000
               name: http
           env:
-            - name: DATABASE_URL
+            - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
-                  key: DATABASE_URL
-            - name: BEDROCK_SERVICE_URL
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
-                  key: BEDROCK_SERVICE_URL
-            - name: FILE_SERVICE_URL
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: AWS_REGION
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
-                  key: FILE_SERVICE_URL
+                  key: AWS_REGION
           startupProbe:
             httpGet:
               path: /health
-              port: 8000
-            initialDelaySeconds: 45
+              port: 9000
+            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             successThreshold: 1
-            failureThreshold: 15
+            failureThreshold: 10
           livenessProbe:
             httpGet:
               path: /health
-              port: 8000
-            initialDelaySeconds: 90
+              port: 9000
+            initialDelaySeconds: 60
             periodSeconds: 20
             timeoutSeconds: 10
             successThreshold: 1
             failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /
-              port: 8000
-            initialDelaySeconds: 60
+              path: /health
+              port: 9000
+            initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
             successThreshold: 1
             failureThreshold: 3
           resources:
             requests:
-              memory: "96Mi"
-              cpu: "50m"
+              memory: "128Mi"
+              cpu: "100m"
             limits:
-              memory: "256Mi"
-              cpu: "200m"
+              memory: "512Mi"
+              cpu: "500m"
