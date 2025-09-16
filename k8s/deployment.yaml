@@ -37,8 +37,8 @@ spec:
                   key: AWS_SECRET_ACCESS_KEY
             - name: AWS_REGION
               valueFrom:
-                secretKeyRef:
-                  name: app-secrets  # ✅ Fixed: get from secret instead
+                configMapKeyRef:
+                  name: app-config
                   key: AWS_REGION
           startupProbe:
             httpGet:
