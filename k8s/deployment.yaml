@@ -40,9 +40,14 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: AWS_REGION
-            # Add debug environment variable
             - name: GO_ENV
               value: "production"
+            # Add database connection from configmap
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DATABASE_URL
           # Increase timeouts for AWS initialization
           startupProbe:
             httpGet:
