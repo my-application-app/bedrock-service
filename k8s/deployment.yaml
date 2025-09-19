@@ -15,11 +15,9 @@ spec:
       labels:
         app: bedrock-service
     spec:
-      imagePullSecrets:
-        - name: docker-hub-secret
       containers:
         - name: bedrock-service
-          image: samitsinghhh/bedrock-service:v3
+          image: samitsinghhh/bedrock-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 9000
@@ -40,46 +38,37 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: AWS_REGION
-            - name: GO_ENV
-              value: "production"
-            # Add database connection from configmap
-            - name: DATABASE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: app-config
-                  key: DATABASE_URL
-          # Increase timeouts for AWS initialization
           startupProbe:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 90    # Increased for AWS connection
-            periodSeconds: 15
-            timeoutSeconds: 15
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
             successThreshold: 1
-            failureThreshold: 20       # More retries for AWS setup
+            failureThreshold: 10
           livenessProbe:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 180   # Much longer for AWS initialization
-            periodSeconds: 30
-            timeoutSeconds: 15
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 10
             successThreshold: 1
             failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /health
               port: 9000
-            initialDelaySeconds: 120   # Longer for AWS ready check
-            periodSeconds: 15
-            timeoutSeconds: 10
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
             successThreshold: 1
-            failureThreshold: 5
+            failureThreshold: 3
           resources:
             requests:
-              memory: "256Mi"          # Increased for AWS SDK
-              cpu: "200m"
+              memory: "128Mi"
+              cpu: "100m"
             limits:
-              memory: "512Mi"          # More memory for Bedrock
+              memory: "512Mi"
               cpu: "500m"
