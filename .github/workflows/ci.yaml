@@ -23,49 +23,49 @@ jobs:
       run: |
         go mod download
         go mod tidy
-        echo "✅ Go dependencies installed"
+        echo " Go dependencies installed"
     
     - name: Code formatting check
       run: |
-        go fmt ./... >/dev/null 2>&1 || echo "⚠️ Code formatting issues found but continuing..."
-        echo "✅ Go formatting check completed"
+        go fmt ./... >/dev/null 2>&1 || echo " Code formatting issues found but continuing..."
+        echo " Go formatting check completed"
     
     - name: Linting with go vet
       run: |
-        go vet ./... >/dev/null 2>&1 || echo "⚠️ Go vet issues found but continuing..."
-        echo "✅ Go vet check completed"
+        go vet ./... >/dev/null 2>&1 || echo " Go vet issues found but continuing..."
+        echo " Go vet check completed"
     
     - name: Install staticcheck for advanced linting
       run: |
-        go install honnef.co/go/tools/cmd/staticcheck@latest >/dev/null 2>&1 || echo "⚠️ Staticcheck installation failed but continuing..."
-        echo "✅ Staticcheck installation completed"
+        go install honnef.co/go/tools/cmd/staticcheck@latest >/dev/null 2>&1 || echo " Staticcheck installation failed but continuing..."
+        echo " Staticcheck installation completed"
     
     - name: Static analysis with staticcheck
       run: |
-        ~/go/bin/staticcheck ./... >/dev/null 2>&1 || echo "⚠️ Static analysis issues found but continuing..."
-        echo "✅ Static analysis completed"
+        ~/go/bin/staticcheck ./... >/dev/null 2>&1 || echo " Static analysis issues found but continuing..."
+        echo " Static analysis completed"
     
     - name: Security scan with gosec
       run: |
-        go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest >/dev/null 2>&1 || echo "⚠️ Gosec installation skipped"
-        ~/go/bin/gosec ./... >/dev/null 2>&1 || echo "⚠️ Security scan completed with findings"
-        echo "✅ Security scan completed"
+        go install github.com/securecodewarrior/gosec/v2/cmd/gosec@latest >/dev/null 2>&1 || echo " Gosec installation skipped"
+        ~/go/bin/gosec ./... >/dev/null 2>&1 || echo " Security scan completed with findings"
+        echo " Security scan completed"
     
     - name: Vulnerability check
       run: |
-        go install golang.org/x/vuln/cmd/govulncheck@latest >/dev/null 2>&1 || echo "⚠️ Govulncheck installation failed but continuing..."
-        ~/go/bin/govulncheck ./... >/dev/null 2>&1 || echo "⚠️ Some vulnerabilities found but continuing..."
-        echo "✅ Vulnerability check completed"
+        go install golang.org/x/vuln/cmd/govulncheck@latest >/dev/null 2>&1 || echo " Govulncheck installation failed but continuing..."
+        ~/go/bin/govulncheck ./... >/dev/null 2>&1 || echo " Some vulnerabilities found but continuing..."
+        echo " Vulnerability check completed"
     
     - name: Run tests
       run: |
-        go test -v ./... -timeout=30s || echo "⚠️ Some tests failed but continuing..."
-        echo "✅ Tests completed"
+        go test -v ./... -timeout=30s || echo " Some tests failed but continuing..."
+        echo " Tests completed"
     
     - name: Build application
       run: |
         CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bedrock-service .
-        echo "✅ Go build completed"
+        echo " Go build completed"
     
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -81,17 +81,17 @@ jobs:
       run: |
         docker build -t samitsinghhh/bedrock-service:${{ github.sha }} .
         docker build -t samitsinghhh/bedrock-service:latest .
-        echo "✅ Docker build completed"
+        echo " Docker build completed"
     
     - name: Push Docker image
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       run: |
         docker push samitsinghhh/bedrock-service:${{ github.sha }}
         docker push samitsinghhh/bedrock-service:latest
-        echo "✅ Docker push completed"
+        echo " Docker push completed"
     
     - name: CI Summary
       run: |
-        echo "🎉 Bedrock Service CI Pipeline completed successfully!"
-        echo "📊 All checks ran with no blocking failures"
-        echo "🚀 Go application built and Docker images ready"
+        echo " Bedrock Service CI Pipeline completed successfully!"
+        echo " All checks ran with no blocking failures"
+        echo " Go application built and Docker images ready"
