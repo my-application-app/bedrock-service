@@ -16,16 +16,16 @@ jobs:
     - name: Check kubectl connection
       run: |
         kubectl cluster-info --request-timeout=10s
-        echo "✅ Kubernetes connection verified"
+        echo " Kubernetes connection verified"
     
     - name: Create namespace (if not exists)
       run: |
         kubectl create namespace bedrock-chat-v2 --dry-run=client -o yaml | kubectl apply -f -
-        echo "✅ Namespace ensured"
+        echo " Namespace ensured"
     
     - name: Create AWS Secrets
       run: |
-        echo "🔐 Creating AWS secrets..."
+        echo " Creating AWS secrets..."
         
         # Create AWS secrets using organization secrets
         cat <<EOF | kubectl apply -f -
@@ -41,11 +41,11 @@ jobs:
           AWS_REGION: "us-east-1"
         EOF
         
-        echo "✅ AWS secrets created"
+        echo " AWS secrets created"
     
     - name: Deploy Bedrock Service
       run: |
-        echo "🚀 Deploying Bedrock Service..."
+        echo " Deploying Bedrock Service..."
         
         # Create bedrock-service deployment
         cat <<EOF | kubectl apply -f -
@@ -125,11 +125,11 @@ jobs:
                       cpu: "500m"
         EOF
         
-        echo "✅ Bedrock service deployment created"
+        echo " Bedrock service deployment created"
     
     - name: Apply Bedrock Service manifests
       run: |
-        echo "📦 Applying Bedrock Service manifests..."
+        echo " Applying Bedrock Service manifests..."
         
         # Apply bedrock service (port 9000)
         kubectl apply -f k8s/service.yaml
@@ -143,20 +143,20 @@ jobs:
         elif [ -f "k8s/network-policies" ]; then
           kubectl apply -f k8s/network-policies
         else
-          echo "⚠️ Network policies file not found, skipping..."
+          echo " Network policies file not found, skipping..."
         fi
         
-        echo "✅ Bedrock service manifests applied"
+        echo " Bedrock service manifests applied"
     
     - name: Wait for Bedrock Service to be ready
       run: |
-        echo "⏳ Waiting for bedrock service to be ready..."
+        echo " Waiting for bedrock service to be ready..."
         kubectl wait --for=condition=available --timeout=300s deployment/bedrock-service -n bedrock-chat-v2
-        echo "✅ Bedrock service is ready"
+        echo " Bedrock service is ready"
     
     - name: Verify Bedrock Service deployment
       run: |
-        echo "🔍 Verifying bedrock service deployment..."
+        echo " Verifying bedrock service deployment..."
         
         # Check AWS secrets
         kubectl get secret -n bedrock-chat-v2 app-secrets
@@ -171,36 +171,36 @@ jobs:
         kubectl get hpa -n bedrock-chat-v2 bedrock-service-hpa || echo "HPA not found, continuing..."
         
         # Test bedrock service health endpoint
-        echo "🧪 Testing bedrock service health endpoint..."
+        echo " Testing bedrock service health endpoint..."
         kubectl exec -n bedrock-chat-v2 $(kubectl get pods -n bedrock-chat-v2 -l app=bedrock-service -o jsonpath='{.items[0].metadata.name}') -- wget -qO- http://localhost:9000/health || echo "Health check failed but continuing..."
         
-        echo "✅ Bedrock service deployment verification completed"
+        echo " Bedrock service deployment verification completed"
     
     - name: Show service architecture
       run: |
-        echo "📊 Service Architecture Status:"
+        echo " Service Architecture Status:"
         echo "================================"
         echo "🔹 API Gateway (port 8000) - calls bedrock service"
-        kubectl get pods -n bedrock-chat-v2 -l app=api-gateway || echo "   ⚠️ API Gateway not found - deploy separately"
+        kubectl get pods -n bedrock-chat-v2 -l app=api-gateway || echo "    API Gateway not found - deploy separately"
         echo ""
         echo "🔹 Bedrock Service (port 9000) - processes AI requests"  
         kubectl get pods -n bedrock-chat-v2 -l app=bedrock-service
         echo ""
-        echo "🔗 Make sure API Gateway's BEDROCK_SERVICE_URL points to:"
+        echo " Make sure API Gateway's BEDROCK_SERVICE_URL points to:"
         echo "   http://bedrock-service.bedrock-chat-v2.svc.cluster.local:9000"
     
     - name: Deployment Summary
       run: |
-        echo "🎉 Bedrock Service CD Pipeline completed successfully!"
-        echo "📋 Deployment Summary:"
+        echo " Bedrock Service CD Pipeline completed successfully!"
+        echo " Deployment Summary:"
         echo "   Service: bedrock-service (AI processing)"
         echo "   Namespace: bedrock-chat-v2"
         echo "   Port: 9000"
         echo "   Commit: ${{ github.sha }}"
         echo "   Image: samitsinghhh/bedrock-service:latest"
-        echo "   AWS Integration: ✅ Configured with organization secrets"
+        echo "   AWS Integration:  Configured with organization secrets"
         echo ""
-        echo "📝 Next steps:"
+        echo " Next steps:"
         echo "   1. Deploy your API Gateway separately if needed"
         echo "   2. Ensure API Gateway's BEDROCK_SERVICE_URL = http://bedrock-service.bedrock-chat-v2.svc.cluster.local:9000"
         
